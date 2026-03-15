@@ -32,7 +32,6 @@ export function proxy(req) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/api/:path*",    
+
   ]
 }
