@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String
+  email    String    @unique
+  password String
+  role     Role
+  payments Payment[]
+
+  @@map("users")
+}
+
+model Payment {
+  id              Int      @id @default(autoincrement())
+  description     String
+  amount          Float
+  status          Status   @default(PENDING)
+  rejectionReason String?
+  authorizerName  String?
+  createdById     Int
+  createdAt       DateTime @default(now())
+  createdBy       User     @relation(fields: [createdById], references: [id])
+
+  @@index([createdById], map: "payments_createdById_fkey")
+  @@map("payments")
+}
+
+enum Role {
+  REGISTRO
+  AUTORIZACAO
+  ADMIN
+
+  @@map("roles")
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("statuses")
+}
