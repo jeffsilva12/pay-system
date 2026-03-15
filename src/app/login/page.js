@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   async function handleLogin(e) {
     e.preventDefault()
-
+    
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: {
@@ -21,9 +21,9 @@ export default function LoginPage() {
       },
       body: JSON.stringify({ email, password })
     })
-
+    
     const data = await res.json()
-
+    
     if (data.token) {
       router.push("/dashboard")
     } else {

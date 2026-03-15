@@ -3,6 +3,13 @@ import jwt from "jsonwebtoken"
 
 export function proxy(req) {
 
+  const { pathname } = req.nextUrl
+
+  // liberar login
+  if (pathname.startsWith("/api/auth")) {
+    return NextResponse.next()
+  }
+
   const token = req.cookies.get("token")?.value
 
   if (!token) {
@@ -15,17 +22,17 @@ export function proxy(req) {
 
     return NextResponse.next()
 
-  } catch (error) {
+  } catch (err) {
 
     return NextResponse.redirect(new URL("/login", req.url))
 
   }
 
 }
+
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/api/:path*",
-    "/"
+    "/api/:path*",    
   ]
 }

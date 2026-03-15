@@ -4,6 +4,9 @@ import jwt from "jsonwebtoken"
 
 export async function POST(req) {
 
+  console.log('teste');
+  
+
   const body = await req.json()
   const { email, password } = body
 
