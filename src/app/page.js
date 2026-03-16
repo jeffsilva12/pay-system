@@ -1,7 +1,15 @@
+import { getServerSession } from "next-auth"
 import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function Home() {
+    const session = getServerSession()
+
+    console.log(!session);
+
+    if (!session) {
+      redirect("/login") // ou sua página de login customizada
+    }
   return (
     <div className={styles.page}>
       <main className={styles.main}>

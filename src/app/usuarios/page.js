@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Sidebar from "@/app/components/Sidebar"
 
 export default function UsersPage() {
 
@@ -14,67 +15,73 @@ export default function UsersPage() {
 
   return (
 
-    <div>
 
-      <div className="d-flex justify-content-between mb-3">
-        <h2>Users</h2>
+    <div className="page">
+      <Sidebar />
 
-        <button className="btn btn-primary">
-          New User
-        </button>
-      </div>
+      <div className="page-wrapper">
+        <div className="d-flex justify-content-between mb-3">
+          <h2>Usuários</h2>
 
-      <div className="card">
+          <a href="/usuarios/cadastrar" className="btn btn-primary">
+            Novo Usuário
+          </a>
+        </div>
 
-        <div className="table-responsive">
+        <div className="card">
 
-          <table className="table table-vcenter">
+          <div className="table-responsive">
 
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Created</th>
-              </tr>
-            </thead>
+            <table className="table table-vcenter">
 
-            <tbody>
-
-              {users.map((user) => (
-
-                <tr key={user.id}>
-
-                  <td>{user.id}</td>
-
-                  <td>{user.name}</td>
-
-                  <td>{user.email}</td>
-
-                  <td>
-                    <span className={`badge bg-${user.active ? "success" : "secondary"}`}>
-                      {user.active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-
-                  <td>
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </td>
-
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Created</th>
                 </tr>
+              </thead>
 
-              ))}
+              <tbody>
 
-            </tbody>
+                {users.map((user) => (
 
-          </table>
+                  <tr key={user.id}>
+
+                    <td>{user.id}</td>
+
+                    <td>{user.name}</td>
+
+                    <td>{user.email}</td>
+
+                    <td>
+                      <span className={`badge bg-${user.active ? "success" : "secondary"}`}>
+                        {user.active ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+
+                    <td>
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 
       </div>
 
     </div>
+
 
   )
 }

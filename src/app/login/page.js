@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
@@ -11,24 +12,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
 
-  async function handleLogin(e) {
+  async function handleSubmit(e) {
+
     e.preventDefault()
-    
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
+
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false
     })
-    
-    const data = await res.json()
-    
-    if (data.token) {
-      router.push("/dashboard")
-    } else {
-      setError("Invalid credentials")
+
+    if (res.error) {
+      setError("Invalid email or password")
+      return
     }
+
+    router.push("/dashboard")
   }
 
   return (
@@ -46,7 +45,7 @@ export default function LoginPage() {
           <div className="card-body">
 
             <h2 className="card-title text-center mb-4">
-              Acesse sua conta
+              Login
             </h2>
 
             {error && (
@@ -55,15 +54,16 @@ export default function LoginPage() {
               </div>
             )}
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
 
               <div className="mb-3">
-                <label className="form-label">E-mail</label>
+                <label className="form-label">
+                  Email
+                </label>
 
                 <input
                   type="email"
                   className="form-control"
-                  placeholder="E-mail"
                   value={email}
                   onChange={(e)=>setEmail(e.target.value)}
                   required
@@ -71,31 +71,26 @@ export default function LoginPage() {
               </div>
 
               <div className="mb-3">
-
                 <label className="form-label">
-                  Senha
+                  Password
                 </label>
 
                 <input
                   type="password"
                   className="form-control"
-                  placeholder="Senha"
                   value={password}
                   onChange={(e)=>setPassword(e.target.value)}
                   required
                 />
-
               </div>
 
               <div className="form-footer">
-
                 <button
                   type="submit"
                   className="btn btn-primary w-100"
                 >
-                  Entrar
+                  Sign in
                 </button>
-
               </div>
 
             </form>

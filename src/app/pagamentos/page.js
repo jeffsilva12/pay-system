@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Sidebar from "@/app/components/Sidebar"
 
 export default function PaymentsPage() {
 
@@ -14,63 +15,67 @@ export default function PaymentsPage() {
 
   return (
 
-    <div>
+    <div className="page">
 
-      <div className="d-flex justify-content-between mb-3">
-        <h2>Payments</h2>
+      <Sidebar />
 
-        <button className="btn btn-primary">
-          New Payment
-        </button>
-      </div>
+      <div className="page-wrapper">
+        <div className="d-flex justify-content-between mb-3">
+          <h2>Pagamentos</h2>
 
-      <div className="card">
+          <a href="/pagamentos/cadastrar" className="btn btn-primary">
+            Novo Pagamento
+          </a>
+        </div>
 
-        <div className="table-responsive">
+        <div className="card">
 
-          <table className="table table-vcenter">
+          <div className="table-responsive">
 
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
+            <table className="table table-vcenter">
 
-            <tbody>
-
-              {payments.map((p) => (
-
-                <tr key={p.id}>
-                  <td>{p.id}</td>
-                  <td>{p.user_email}</td>
-                  <td>${p.amount}</td>
-
-                  <td>
-                    <span className={`badge bg-${p.status === "paid" ? "success" : "warning"}`}>
-                      {p.status}
-                    </span>
-                  </td>
-
-                  <td>
-                    {new Date(p.created_at).toLocaleDateString()}
-                  </td>
-
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>User</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
                 </tr>
+              </thead>
 
-              ))}
+              <tbody>
 
-            </tbody>
+                {payments.map((p) => (
 
-          </table>
+                  <tr key={p.id}>
+                    <td>{p.id}</td>
+                    <td>{p.user_email}</td>
+                    <td>${p.amount}</td>
+
+                    <td>
+                      <span className={`badge bg-${p.status === "paid" ? "success" : "warning"}`}>
+                        {p.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      {new Date(p.created_at).toLocaleDateString()}
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 
       </div>
-
     </div>
 
   )
