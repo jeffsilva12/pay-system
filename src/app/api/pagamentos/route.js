@@ -5,7 +5,7 @@ export async function GET() {
 
   const payments = await prisma.payment.findMany({
     orderBy: {
-      created_at: "desc"
+      id: "desc"
     }
   })
 

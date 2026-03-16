@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Sidebar from "@/app/components/Sidebar"
+import Layout from "@/app/components/Layout"
+import Link from "next/link"
 
 export default function UsersPage() {
-
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -14,74 +14,62 @@ export default function UsersPage() {
   }, [])
 
   return (
-
-
-    <div className="page">
-      <Sidebar />
-
-      <div className="page-wrapper">
-        <div className="d-flex justify-content-between mb-3">
-          <h2>Usuários</h2>
-
-          <a href="/usuarios/cadastrar" className="btn btn-primary">
-            Novo Usuário
-          </a>
-        </div>
-
-        <div className="card">
-
-          <div className="table-responsive">
-
-            <table className="table table-vcenter">
-
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-
-              <tbody>
-
-                {users.map((user) => (
-
-                  <tr key={user.id}>
-
-                    <td>{user.id}</td>
-
-                    <td>{user.name}</td>
-
-                    <td>{user.email}</td>
-
-                    <td>
-                      <span className={`badge bg-${user.active ? "success" : "secondary"}`}>
-                        {user.active ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-
-                    <td>
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </td>
-
-                  </tr>
-
-                ))}
-
-              </tbody>
-
-            </table>
-
+    <Layout>
+      {/* Cabeçalho da Página */}
+      <div className="page-header d-print-none">
+        <div className="container-xl">
+          <div className="row g-2 align-items-center">
+            <div className="col">
+              <h2 className="page-title">Usuários</h2>
+            </div>
+            <div className="col-auto ms-auto d-print-none">
+              <Link href="/usuarios/cadastrar" className="btn btn-primary">
+                {/* Ícone de Plus (opcional) */}
+                <svg xmlns="http://www.w3.org" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                Novo Usuário
+              </Link>
+            </div>
           </div>
-
         </div>
-
       </div>
 
-    </div>
-
-
+      {/* Corpo da Página */}
+      <div className="page-body">
+        <div className="container-xl">
+          <div className="card">
+            <div className="table-responsive">
+              <table className="table table-vcenter card-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Criado em</th>
+                    <th>Status</th>
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.name}</td>
+                      <td className="text-muted">{user.email}</td>
+                      <td className="text-muted">{new Date(user.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`badge bg-${user.status ? "success" : "alert"}`}>
+                          {user.status ? "Ativo" : "Inativo"}
+                        </span>
+                      </td>
+                      
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
   )
 }

@@ -1,15 +1,26 @@
+"use client";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Sidebar() {
+  const router = useRouter();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    // Limpa a sessão
+    localStorage.removeItem('token'); 
+    // Redireciona para o login
+    router.push('/login');
+  };
+
   return (
-    // Adicionei 'navbar-dark' e 'bg-dark' para garantir o fundo preto/escuro
     <aside className="navbar navbar-vertical navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu">
           <span className="navbar-toggler-icon"></span>
         </button>
         
-        {/* Adicionei 'text-white' para o título não sumir no fundo escuro */}
         <h1 className="navbar-brand navbar-brand-autodark">
           <Link href="/dashboard" className="text-white text-decoration-none">
             Pay System
@@ -17,12 +28,11 @@ export default function Sidebar() {
         </h1>
         
         <div className="collapse navbar-collapse" id="sidebar-menu">
-          <ul className="navbar-nav pt-lg-3">
+          <ul className="navbar-nav pt-lg-3 d-flex flex-column h-100">
             
             <li className="nav-item">
               <Link className="nav-link" href="/dashboard">
                 <span className="nav-link-icon d-md-none d-lg-inline-block">
-                  {/* Ícone de Casa (Home) opcional */}
                   <svg xmlns="http://www.w3.org" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
                 </span>
                 <span className="nav-link-title">Dashboard</span>
@@ -45,7 +55,7 @@ export default function Sidebar() {
                 </span>
                 <span className="nav-link-title">Pagamentos</span>
               </Link>
-            </li>
+            </li>           
 
           </ul>
         </div>

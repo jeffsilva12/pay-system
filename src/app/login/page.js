@@ -23,7 +23,7 @@ export default function LoginPage() {
     })
 
     if (res.error) {
-      setError("Invalid email or password")
+      setError("E-mail ou senha inválidos.")
       return
     }
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
           <div className="card-body">
 
             <h2 className="card-title text-center mb-4">
-              Login
+              Acesse sua conta
             </h2>
 
             {error && (
@@ -58,7 +58,7 @@ export default function LoginPage() {
 
               <div className="mb-3">
                 <label className="form-label">
-                  Email
+                  E-mail
                 </label>
 
                 <input
@@ -72,7 +72,7 @@ export default function LoginPage() {
 
               <div className="mb-3">
                 <label className="form-label">
-                  Password
+                  Senha
                 </label>
 
                 <input
@@ -89,7 +89,7 @@ export default function LoginPage() {
                   type="submit"
                   className="btn btn-primary w-100"
                 >
-                  Sign in
+                  Entrar
                 </button>
               </div>
 
