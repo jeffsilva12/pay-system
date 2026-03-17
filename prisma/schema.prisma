@@ -24,7 +24,7 @@ model Payment {
   id              Int      @id @default(autoincrement())
   description     String
   amount          Float
-  status          Status   @default(PENDING)
+  status          Status   @default(PENDENTE)
   rejectionReason String?
   authorizerName  String?
   createdById     Int
@@ -44,9 +44,9 @@ enum Role {
 }
 
 enum Status {
-  PENDING
-  APPROVED
-  REJECTED
+  PENDENTE
+  APROVADO
+  REJEITADO
 
   @@map("statuses")
 }

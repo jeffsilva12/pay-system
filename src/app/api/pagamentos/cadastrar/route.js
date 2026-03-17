@@ -27,8 +27,8 @@ export async function POST(request) {
     // 3. Mapear o status do Form (pt-br) para o Enum do Prisma (en)
     // No seu schema: PENDING, APPROVED, REJECTED
     const statusMap = {
-      "pendente": "PENDING",
-      "pago": "APPROVED"
+      "pendente": "PENDENTE",
+      "aprovado": "APROVADO"
     };
 
     const newPayment = await prisma.payment.create({

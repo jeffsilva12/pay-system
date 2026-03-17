@@ -121,11 +121,11 @@ export default function PagamentosPage() {
                         <span className="form-selectgroup-label">Pendente</span>
                       </label>
                       <label className="form-selectgroup-item">
-                        <input type="radio" name="status" value="pago" className="form-selectgroup-input" 
-                          checked={formData.status === "pago"} 
+                        <input type="radio" name="status" value="aprovado" className="form-selectgroup-input" 
+                          checked={formData.status === "aprovado"} 
                           onChange={(e) => setFormData({...formData, status: e.target.value})}
                         />
-                        <span className="form-selectgroup-label text-success">Pago</span>
+                        <span className="form-selectgroup-label text-success">Aprovado</span>
                       </label>
                     </div>
                   </div>
