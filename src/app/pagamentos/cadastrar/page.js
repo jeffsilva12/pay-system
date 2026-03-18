@@ -1,146 +1,184 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Layout from "@/app/components/Layout"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSearch, faCheckCircle, faBuilding } from "@fortawesome/free-solid-svg-icons"
 
 export default function PagamentosPage() {
+  const [suppliers, setSuppliers] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [showResults, setShowResults] = useState(false)
+  const [selectedSupplier, setSelectedSupplier] = useState(null)
+  const dropdownRef = useRef(null) // Para fechar ao clicar fora
+  
   const [formData, setFormData] = useState({
-    cliente: "",
+    supplierId: "",
     valor: "",
-    descricao: "",
-    status: "pendente",
-    data_pagamento: new Date().toISOString().split('T')[0]
+    descricao: ""
   })
+
+  useEffect(() => {
+    async function loadSuppliers() {
+      const res = await fetch("/api/fornecedores")
+      const data = await res.json()
+      setSuppliers(data)
+    }
+    loadSuppliers()
+
+    // Fecha o dropdown se clicar fora dele
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowResults(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const filteredSuppliers = suppliers.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    s.cnpj.includes(searchTerm.replace(/\D/g, ""))
+  )
+
+  const handleSelectSupplier = (s) => {
+    setSelectedSupplier(s)
+    setFormData({ ...formData, supplierId: s.id })
+    setSearchTerm(`${s.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")} - ${s.name}`)
+    setShowResults(false)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    const valorTratado = typeof formData.valor === 'string' 
-      ? parseFloat(formData.valor.replace(",", ".")) 
-      : formData.valor;
+    if (!formData.supplierId) return alert("Selecione um fornecedor da lista!")
+
+    const payload = {
+      supplierId: parseInt(formData.supplierId),
+      amount: parseFloat(formData.valor),
+      description: formData.descricao,
+    }
 
     const res = await fetch("/api/pagamentos/cadastrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...formData, valor: valorTratado })
+      body: JSON.stringify(payload)
     })
 
     if (res.ok) {
       alert("Pagamento registrado com sucesso!")
-      setFormData({ 
-        cliente: "", 
-        valor: "", 
-        descricao: "", 
-        status: "pendente", 
-        data_pagamento: new Date().toISOString().split('T')[0] 
-      })
+      setFormData({ supplierId: "", valor: "", descricao: "" })
+      setSearchTerm("")
+      setSelectedSupplier(null)
     }
   }
 
   return (
     <Layout>
-      <div className="page-header d-print-none">
-        <div className="container-xl">
-          <h2 className="page-title">Registrar Novo Pagamento</h2>
-        </div>
-      </div>
-
       <div className="page-body">
         <div className="container-xl">
           <div className="row justify-content-center">
             <div className="col-md-6">
-              
-              <form className="card" onSubmit={handleSubmit}>
-                <div className="card-status-top bg-green"></div>
-                
-                <div className="card-body">
-                  <div className="mb-3">
-                    <label className="form-label required">Cliente / Beneficiário</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      placeholder="Nome do cliente ou empresa"
-                      value={formData.cliente}
-                      onChange={(e) => setFormData({...formData, cliente: e.target.value})}
-                      required 
-                    />
-                  </div>
+              <form className="card shadow-sm" onSubmit={handleSubmit} style={{ overflow: 'visible' }}>
+                <div className="card-status-top bg-primary"></div>
+                <div className="card-body" style={{ overflow: 'visible' }}>
+                  <h3 className="card-title mb-4">Registrar Pagamento</h3>
 
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label required">Valor (R$)</label>
-                        <div className="input-group">
-                          <span className="input-group-text">R$</span>
-                          <input 
-                            type="number" 
-                            step="0.01"
-                            className="form-control" 
-                            placeholder="0,00"
-                            value={formData.valor}
-                            onChange={(e) => setFormData({...formData, valor: e.target.value})}
-                            required 
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label required">Data</label>
-                        <input 
-                          type="date" 
-                          className="form-control" 
-                          value={formData.data_pagamento}
-                          onChange={(e) => setFormData({...formData, data_pagamento: e.target.value})}
-                          required 
+                  {/* BUSCA DE FORNECEDOR */}
+                  <div className="mb-3 position-relative" ref={dropdownRef}>
+                    <label className="form-label required">Fornecedor</label>
+                    <div className="input-icon">
+                      <span className="input-icon-addon">
+                        <FontAwesomeIcon 
+                          icon={selectedSupplier ? faCheckCircle : faSearch} 
+                          className={selectedSupplier ? "text-success" : ""} 
                         />
+                      </span>
+                      <input 
+                        type="text"
+                        className={`form-control ${selectedSupplier ? "is-valid" : ""}`}
+                        placeholder="Busque por CNPJ ou Nome..."
+                        value={searchTerm}
+                        onFocus={() => setShowResults(true)}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value)
+                          setSelectedSupplier(null)
+                          setShowResults(true)
+                        }}
+                        autoComplete="off"
+                        required
+                      />
+                    </div>
+
+                    {/* DROPDOWN MELHORADO */}
+                    {showResults && searchTerm.length > 0 && (
+                      <div 
+                        className="list-group position-absolute w-100 shadow-lg border" 
+                        style={{ 
+                          zIndex: 9999, 
+                          maxHeight: '220px', 
+                          overflowY: 'auto',
+                          top: '100%', // Cola logo abaixo do input
+                          left: 0,
+                          backgroundColor: 'white' // Garante que não seja transparente
+                        }}
+                      >
+                        {filteredSuppliers.length > 0 ? (
+                          filteredSuppliers.map(s => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+                              onClick={() => handleSelectSupplier(s)}
+                              style={{ borderLeft: 0, borderRight: 0 }}
+                            >
+                              <div>
+                                <div className="font-weight-bold">{s.name}</div>
+                                <div className="text-muted small">
+                                  {s.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")}
+                                </div>
+                              </div>
+                              <FontAwesomeIcon icon={faBuilding} className="text-muted opacity-25" />
+                            </button>
+                          ))
+                        ) : (
+                          <div className="list-group-item text-center text-muted">
+                            Nenhum fornecedor encontrado
+                          </div>
+                        )}
                       </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label required">Valor do Pagamento</label>
+                    <div className="input-group">
+                      <span className="input-group-text">R$</span>
+                      <input 
+                        type="number" step="0.01" className="form-control" 
+                        placeholder="0,00"
+                        value={formData.valor}
+                        onChange={(e) => setFormData({...formData, valor: e.target.value})}
+                        required 
+                      />
                     </div>
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label">Descrição / Observações</label>
+                    <label className="form-label required">Descrição do Serviço</label>
                     <textarea 
-                      className="form-control" 
-                      rows="3"
-                      placeholder="Detalhes do pagamento..."
+                      className="form-control" rows="3"
+                      placeholder="Ex: Consultoria técnica mensal..."
                       value={formData.descricao}
                       onChange={(e) => setFormData({...formData, descricao: e.target.value})}
+                      required
                     ></textarea>
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label">Status do Pagamento</label>
-                    <div className="form-selectgroup">
-                      <label className="form-selectgroup-item">
-                        <input type="radio" name="status" value="pendente" className="form-selectgroup-input" 
-                          checked={formData.status === "pendente"} 
-                          onChange={(e) => setFormData({...formData, status: e.target.value})} 
-                        />
-                        <span className="form-selectgroup-label">Pendente</span>
-                      </label>
-                      <label className="form-selectgroup-item">
-                        <input type="radio" name="status" value="aprovado" className="form-selectgroup-input" 
-                          checked={formData.status === "aprovado"} 
-                          onChange={(e) => setFormData({...formData, status: e.target.value})}
-                        />
-                        <span className="form-selectgroup-label text-success">Aprovado</span>
-                      </label>
-                    </div>
                   </div>
                 </div>
 
                 <div className="card-footer text-end">
-                  <button type="button" className="btn btn-link link-secondary" onClick={() => window.history.back()}>
-                    Voltar
-                  </button>
-                  <button type="submit" className="btn btn-success ms-auto">
-                    Salvar
-                  </button>
+                  <button type="submit" className="btn btn-primary">Salvar</button>
                 </div>
               </form>
-
             </div>
           </div>
         </div>

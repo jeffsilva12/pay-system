@@ -1,3 +1,9 @@
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
+import Providers from "./providers";
+
+
 export const metadata = {
   title: "Pay System",
   description: "CMS"
@@ -5,7 +11,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <link
           href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css"
@@ -13,7 +19,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

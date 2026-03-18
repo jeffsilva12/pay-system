@@ -1,17 +1,30 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import Layout from "@/app/components/Layout";
 
-export default async function Dashboard() {
-  const session = await getServerSession();
+export default function Dashboard() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!session) {
-    redirect("/login");
-  }
+  useEffect(() => {
+    async function loadDashboard() {
+      const res = await fetch("/api/dashboard");
+      if (res.ok) {
+        const json = await res.json();
+        setData(json);
+      }
+      setLoading(false);
+    }
+    loadDashboard();
+  }, []);
+
+  if (loading) return <Layout><p>Carregando dashboard...</p></Layout>;
+
+  if (!data) return <Layout><p>Erro ao carregar dashboard</p></Layout>;
 
   return (
     <Layout>
-      {/* O page-header e o page-body agora são o "children" do layout */}
       <div className="page-header d-print-none">
         <div className="container-xl">
           <div className="row g-2 align-items-center">
@@ -25,22 +38,43 @@ export default async function Dashboard() {
       <div className="page-body">
         <div className="container-xl">
           <div className="row row-deck row-cards">
-            <div className="col-md-6 col-xl-4">
+
+            <div className="col-md-6 col-xl-3">
               <div className="card">
                 <div className="card-body">
-                  <div className="subheader">Total Payments</div>
-                  <div className="h1 mb-3">$2,450</div>
+                  <div className="subheader">Fornecedores</div>
+                  <div className="h1 mb-3">{data.suppliers}</div>
                 </div>
               </div>
             </div>
-            <div className="col-md-6 col-xl-4">
+
+            <div className="col-md-6 col-xl-3">
               <div className="card">
                 <div className="card-body">
-                  <div className="subheader">Users</div>
-                  <div className="h1 mb-3">124</div>
+                  <div className="subheader">Usuários</div>
+                  <div className="h1 mb-3">{data.users}</div>
                 </div>
               </div>
             </div>
+
+            <div className="col-md-6 col-xl-3">
+              <div className="card">
+                <div className="card-body">
+                  <div className="subheader">Pagamentos Aprovados</div>
+                  <div className="h1 mb-3">{data.paymentsApproved}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6 col-xl-3">
+              <div className="card">
+                <div className="card-body">
+                  <div className="subheader">Pagamentos Rejeitados</div>
+                  <div className="h1 mb-3">{data.paymentsRejected}</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
