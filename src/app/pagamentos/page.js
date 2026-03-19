@@ -5,10 +5,22 @@ import Layout from "@/app/components/Layout"
 import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons"
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function PaymentsPage() {
+  const { data: session, status } = useSession();
+    const router = useRouter();
+    useEffect(() => {
+      if (status === "unauthenticated") {
+        router.push("/login");
+      }
+    }, [status, router]);
+
   const [payments, setPayments] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [reason, setReason] = useState(""); // Motivo da rejeição
 
   useEffect(() => {
     // Busca a lista de pagamentos (certifique-se que a API traz o include: { supplier: true })
@@ -27,6 +39,44 @@ export default function PaymentsPage() {
       p.description?.toLowerCase().includes(search)
     )
   })
+
+  const handleAction = async (status) => {
+    console.log(status);
+    
+    if (status === 'REJECTED' && !reason) {
+      alert("Por favor, informe o motivo da rejeição.");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/pagamentos/atualizar-status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedPayment.id,
+          status: status,
+          motivo: reason
+        }),
+      });
+
+      if (response.ok) {
+        alert(`Pagamento ${status === 'AUTORIZADO' ? 'autorizado' : 'rejeitado'} com sucesso!`);
+        // Opcional: recarregar a página ou atualizar o estado local para refletir a mudança
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        alert("Erro: " + errorData.error);
+      }
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Erro ao conectar com o servidor.");
+    } finally {
+      setSelectedPayment(null);
+      setReason("");
+    }
+  };
+
+
 
   return (
     <Layout>
@@ -48,16 +98,16 @@ export default function PaymentsPage() {
 
       <div className="page-body">
         <div className="container-xl">
-          
+
           {/* Barra de Busca */}
           <div className="mb-3">
             <div className="input-icon">
               <span className="input-icon-addon">
                 <FontAwesomeIcon icon={faSearch} />
               </span>
-              <input 
-                type="text" 
-                className="form-control" 
+              <input
+                type="text"
+                className="form-control"
                 placeholder="Buscar por fornecedor, CNPJ ou descrição..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -92,10 +142,9 @@ export default function PaymentsPage() {
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.amount)}
                       </td>
                       <td>
-                        <span className={`badge ${
-                          p.status === "APROVADO" ? "bg-success-lt" : 
+                        <span className={`badge ${p.status === "AUTORIZADO" ? "bg-success-lt" :
                           p.status === "REJEITADO" ? "bg-danger-lt" : "bg-warning-lt"
-                        }`}>
+                          }`}>
                           {p.status}
                         </span>
                       </td>
@@ -103,9 +152,12 @@ export default function PaymentsPage() {
                         {new Date(p.createdAt).toLocaleDateString('pt-BR')}
                       </td>
                       <td>
-                        <Link href={`/pagamentos/${p.id}`} className="btn btn-ghost-primary btn-sm">
+                        <button
+                          onClick={() => setSelectedPayment(p)}
+                          className="btn btn-ghost-primary btn-sm"
+                        >
                           Detalhes
-                        </Link>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -122,6 +174,40 @@ export default function PaymentsPage() {
           </div>
         </div>
       </div>
+
+      {selectedPayment && (
+        <div className="modal-overlay"> {/* Estilize para cobrir a tela */}
+          <div className="modal-content p-4 bg-white rounded shadow">
+            <h3>Detalhes do Pagamento #{selectedPayment.id}</h3>
+            <p><strong>Valor:</strong> R$ {selectedPayment.amount}</p>
+            {/* Adicione outros campos como supplier, createdBy, etc. */}
+
+            <hr />
+
+            <div className="mb-3">
+              <label>Motivo da Rejeição (se aplicável):</label>
+              <textarea
+                className="form-control"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </div>
+
+            <div className="d-flex justify-content-end gap-2">
+              <button className="btn btn-danger" onClick={() => handleAction('REJEITADO')}>
+                Rejeitar
+              </button>
+              <button className="btn btn-success" onClick={() => handleAction('AUTORIZADO')}>
+                Autorizar
+              </button>
+              <button className="btn btn-secondary" onClick={() => setSelectedPayment(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
   )
 }

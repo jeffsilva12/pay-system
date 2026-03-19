@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from "react"
 import Layout from "@/app/components/Layout"
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link"
 
 export default function FornecedoresListPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
   const [suppliers, setSuppliers] = useState([])
 
   useEffect(() => {

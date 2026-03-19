@@ -1,36 +1,180 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💸 Pay System
 
-## Getting Started
+Uma aplicação full-stack moderna para gestão, aprovação e controle de pagamentos a fornecedores. Desenvolvida com foco em agilidade, segurança de dados e organização financeira.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-14+-black)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
+![Vercel](https://img.shields.io/badge/Vercel-Deploy-black)
+
+---
+
+## 🚀 Tecnologias
+
+* **Framework:** Next.js 14+ (App Router)
+* **ORM:** Prisma
+* **Estilização:** Tabler (Baseado em Bootstrap 5)
+* **Ícones:** FontAwesome
+* **Banco de Dados:** MySQL (ou outro via Prisma)
+* **Deployment:** Vercel
+
+---
+
+## 🛠️ Pré-requisitos
+
+Antes de começar, você precisará ter instalado:
+
+* Node.js (v18 ou superior)
+* npm ou yarn
+* Banco de dados (MySQl recomendado)
+
+---
+
+## 📦 Instalação e Configuração
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seu-usuario/pay-system.git
+cd pay-system
+```
+
+### 2. Instale as dependências
+
+```bash
+npm install
+```
+
+### 3. Configure as variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/pay_system"
+NEXTAUTH_SECRET="sua_chave_secreta"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+---
+
+### 4. Configure o banco de dados
+
+Execute as migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+Se quiser popular com dados iniciais:
+
+```bash
+npx prisma db seed
+```
+
+---
+
+### 5. Rode a aplicação
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse no navegador:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧩 Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+* Cadastro de fornecedores
+* Criação de solicitações de pagamento
+* Fluxo de aprovação (multi-nível)
+* Controle de status (pendente, autorizado, recusado)
+* Histórico completo de ações
+* Autenticação de usuários
+* Dashboard com visão geral financeira
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Estrutura do Projeto
 
-## Deploy on Vercel
+```bash
+.
+├── app/                # Rotas e páginas (App Router)
+├── components/         # Componentes reutilizáveis
+├── lib/                # Utilitários e helpers
+├── prisma/             # Schema e migrations
+├── public/             # Arquivos estáticos
+├── styles/             # Estilos globais
+└── types/              # Tipagens TypeScript
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔐 Segurança
+
+* Autenticação com sessões seguras
+* Proteção de rotas privadas
+* Validação de dados no backend
+* Uso de variáveis de ambiente
+
+---
+
+## 🚀 Deploy
+
+### Vercel (recomendado)
+
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
+
+---
+
+## 📌 Scripts disponíveis
+
+```bash
+npm run dev        # Ambiente de desenvolvimento
+npm run build      # Build de produção
+npm run start      # Rodar build
+npm run lint       # Lint do projeto
+```
+
+---
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch:
+
+```bash
+git checkout -b minha-feature
+```
+
+3. Commit suas mudanças:
+
+```bash
+git commit -m "feat: minha nova feature"
+```
+
+4. Push:
+
+```bash
+git push origin minha-feature
+```
+
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvido por você 🚀

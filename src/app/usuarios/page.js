@@ -4,13 +4,17 @@ import { useEffect, useState } from "react"
 import Layout from "@/app/components/Layout"
 import Link from "next/link"
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function UsersPage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession();
+    const router = useRouter();
+    useEffect(() => {
+      if (status === "unauthenticated") {
+        router.push("/login");
+      }
+    }, [status, router]);
 
-  if (session?.user.role !== "ADMIN") {
-    return <p>Sem permissão</p>
-  }
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function UsersPage() {
                       <td>{user.name}</td>
                       <td className="text-muted">{user.email}</td>
                       <td className="text-muted">{user.role}</td>
-                      <td className="text-muted">{new Date(user.created_at).toLocaleDateString('pt-BR')}</td>
+                      <td className="text-muted">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível'}</td>
                       <td>
                         <span className={`badge bg-${user.status ? "success" : "alert"}`}>
                           {user.status ? "Ativo" : "Inativo"}

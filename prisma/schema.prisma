@@ -7,26 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ... (mantenha o generator e datasource como estão)
-
 model User {
   id        Int       @id @default(autoincrement())
   name      String
   email     String    @unique
   password  String
   role      Role
-  status    Boolean?  @default(true)  
   createdAt DateTime  @default(now())
+  status    Boolean?  @default(true)
   payments  Payment[]
 
   @@map("users")
 }
 
 model Supplier {
-  id        Int       @id @default(autoincrement())
-  name      String    // Nome da empresa/fornecedor
-  cnpj      String?   @unique // Opcional, mas recomendado para MySQL
-  payments  Payment[] // Relação inversa: um fornecedor tem vários pagamentos
+  id       Int       @id @default(autoincrement())
+  name     String
+  cnpj     String?   @unique
+  payments Payment[]
 
   @@map("suppliers")
 }
@@ -38,17 +36,14 @@ model Payment {
   status          Status   @default(PENDENTE)
   rejectionReason String?
   authorizerName  String?
-  
   createdById     Int
+  createdAt       DateTime @default(now())
+  supplierId      Int
   createdBy       User     @relation(fields: [createdById], references: [id])
-
-  supplierId      Int      // Campo que guarda o ID do fornecedor
   supplier        Supplier @relation(fields: [supplierId], references: [id])
 
-  createdAt       DateTime @default(now())
-
   @@index([createdById], map: "payments_createdById_fkey")
-  @@index([supplierId], map: "payments_supplierId_fkey") // Índice para performance
+  @@index([supplierId], map: "payments_supplierId_fkey")
   @@map("payments")
 }
 
@@ -62,7 +57,7 @@ enum Role {
 
 enum Status {
   PENDENTE
-  APROVADO
+  AUTORIZADO
   REJEITADO
 
   @@map("statuses")

@@ -4,8 +4,18 @@ import { useState, useEffect, useRef } from "react"
 import Layout from "@/app/components/Layout"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSearch, faCheckCircle, faBuilding } from "@fortawesome/free-solid-svg-icons"
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function PagamentosPage() {
+  const { data: session, status } = useSession();
+    const router = useRouter();
+    useEffect(() => {
+      if (status === "unauthenticated") {
+        router.push("/login");
+      }
+    }, [status, router]);
+
   const [suppliers, setSuppliers] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [showResults, setShowResults] = useState(false)
