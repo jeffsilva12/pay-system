@@ -2,6 +2,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import Providers from "./providers";
+import Script from "next/script";
 
 
 export const metadata = {
@@ -22,6 +23,11 @@ export default function RootLayout({ children }) {
         <Providers>
           {children}
         </Providers>
+
+        <Script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )

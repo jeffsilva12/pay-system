@@ -10,11 +10,18 @@ export async function GET() {
   }
 
   // Contagem de dados
-  const [suppliersCount, usersCount, paymentsApproved, paymentsRejected] = await Promise.all([
+  const [
+    suppliersCount,
+    usersCount,
+    paymentsApproved,
+    paymentsRejected,
+    paymentsPending,
+  ] = await Promise.all([
     prisma.supplier.count(),
     prisma.user.count(),
     prisma.payment.count({ where: { status: "AUTORIZADO" } }),
     prisma.payment.count({ where: { status: "REJEITADO" } }),
+    prisma.payment.count({ where: { status: "PENDENTE" } }),
   ]);
 
   return NextResponse.json({
@@ -22,5 +29,6 @@ export async function GET() {
     users: usersCount,
     paymentsApproved,
     paymentsRejected,
+    paymentsPending,
   });
 }
