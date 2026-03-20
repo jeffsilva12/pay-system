@@ -55,23 +55,28 @@ export default function Sidebar() {
               </li>
             )}
 
-            <li className="nav-item">
-              <Link className="nav-link" href="/pagamentos">
-                <span className="nav-link-icon d-md-none d-lg-inline-block">
-                  <FontAwesomeIcon icon={faCreditCard} style={{ width: "18px" }} />
-                </span>
-                <span className="nav-link-title">Pagamentos</span>
-              </Link>
-            </li>
+            {/* Links visíveis apenas para REGISTRO ou ADMIN */}
+            {(session?.user.role === "REGISTRO" || session?.user.role === "ADMIN") && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/pagamentos">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <FontAwesomeIcon icon={faCreditCard} style={{ width: "18px" }} />
+                    </span>
+                    <span className="nav-link-title">Pagamentos</span>
+                  </Link>
+                </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" href="/fornecedores">
-                <span className="nav-link-icon d-md-none d-lg-inline-block">
-                  <FontAwesomeIcon icon={faBuilding} style={{ width: "18px" }} />
-                </span>
-                <span className="nav-link-title">Fornecedores</span>
-              </Link>
-            </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/fornecedores">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <FontAwesomeIcon icon={faBuilding} style={{ width: "18px" }} />
+                    </span>
+                    <span className="nav-link-title">Fornecedores</span>
+                  </Link>
+                </li>
+              </>
+            )}
 
             <li className="nav-item mt-auto">
               <a className="nav-link" href="#" onClick={handleLogout}>

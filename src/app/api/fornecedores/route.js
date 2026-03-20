@@ -1,15 +1,30 @@
+import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 export async function GET() {
+  const suppliers = await prisma.supplier.findMany({
+    orderBy: { id: "desc" },
+  });
+  return NextResponse.json(suppliers);
+}
+
+export async function POST(request) {
   try {
-    const fornecedores = await prisma.supplier.findMany({
-      orderBy: { name: 'asc' }
+    const { name, cnpj } = await request.json();
+
+    if (!name) {
+      return NextResponse.json({ error: "O nome é obrigatório." }, { status: 400 });
+    }
+
+    const newSupplier = await prisma.supplier.create({
+      data: { name, cnpj },
     });
-    return NextResponse.json(fornecedores);
+
+    return NextResponse.json(newSupplier, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Erro ao buscar a lista" }, { status: 500 });
+    if (error.code === "P2002") {
+      return NextResponse.json({ error: "Este CNPJ já está cadastrado." }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Erro ao criar fornecedor." }, { status: 500 });
   }
 }

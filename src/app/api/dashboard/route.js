@@ -9,19 +9,29 @@ export async function GET() {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  // Contagem de dados
+  const userId = session.user.id;
+
   const [
     suppliersCount,
     usersCount,
     paymentsApproved,
     paymentsRejected,
     paymentsPending,
+    hasRejectedPayment
   ] = await Promise.all([
     prisma.supplier.count(),
     prisma.user.count(),
     prisma.payment.count({ where: { status: "AUTORIZADO" } }),
     prisma.payment.count({ where: { status: "REJEITADO" } }),
     prisma.payment.count({ where: { status: "PENDENTE" } }),
+
+    // 🔥 Aqui é o segredo
+    prisma.payment.findFirst({
+      where: {
+        status: "REJEITADO",
+        userId: userId, // ajusta se o campo for outro nome
+      },
+    }),
   ]);
 
   return NextResponse.json({
@@ -30,5 +40,6 @@ export async function GET() {
     paymentsApproved,
     paymentsRejected,
     paymentsPending,
+    hasRejectedPayment: !!hasRejectedPayment,
   });
 }

@@ -1,87 +1,70 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Layout from "@/app/components/Layout"
-import Link from "next/link"
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import UserTable from "@/app/components/usuarios/UserTable";
+import UserModal from "@/app/components/usuarios/UserModal";
+import Layout from "@/app/components/Layout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons"
 
-export default function UsersPage() {
-  const { data: session, status } = useSession();
-    const router = useRouter();
-    useEffect(() => {
-      if (status === "unauthenticated") {
-        router.push("/login");
-      }
-    }, [status, router]);
+export default function UsuariosPage() {
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
-  const [users, setUsers] = useState([])
+  async function loadUsers() {
+    const res = await fetch("/api/usuarios");
+    const data = await res.json();
+    setUsers(data);
+  }
 
   useEffect(() => {
-    fetch("/api/usuarios")
-      .then(res => res.json())
-      .then(data => setUsers(data))
-  }, [])
+    loadUsers();
+  }, []);
+
+  function handleEdit(user) {
+    setSelectedUser(user);
+    setOpenModal(true);
+  }
+
+  function handleCreate() {
+    setSelectedUser(null);
+    setOpenModal(true);
+  }
 
   return (
     <Layout>
-      {/* Cabeçalho da Página */}
       <div className="page-header d-print-none">
         <div className="container-xl">
-          <div className="row g-2 align-items-center">
-            <div className="col">
-              <h2 className="page-title">Usuários</h2>
-            </div>
-            <div className="col-auto ms-auto d-print-none">
-              <Link href="/usuarios/cadastrar" className="btn btn-primary">
-                {/* Ícone de Plus (opcional) */}
-                <svg xmlns="http://www.w3.org" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                Novo Usuário
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="page-title">Usuários</h2>
+
+            <button className="btn btn-primary" onClick={handleCreate}>
+              <FontAwesomeIcon icon={faPlus} className="me-2" />
+              Novo Usuário
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Corpo da Página */}
       <div className="page-body">
         <div className="container-xl">
-          <div className="card">
-            <div className="table-responsive">
-              <table className="table table-vcenter card-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Perfil</th>
-                    <th>Criado em</th>
-                    <th>Status</th>
 
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>{user.name}</td>
-                      <td className="text-muted">{user.email}</td>
-                      <td className="text-muted">{user.role}</td>
-                      <td className="text-muted">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível'}</td>
-                      <td>
-                        <span className={`badge bg-${user.status ? "success" : "alert"}`}>
-                          {user.status ? "Ativo" : "Inativo"}
-                        </span>
-                      </td>
+          <UserTable
+            users={users}
+            onEdit={handleEdit}
+            refresh={loadUsers}
+          />
 
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UserModal
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            user={selectedUser}
+            refresh={loadUsers}
+          />
+
         </div>
       </div>
     </Layout>
-  )
+  );
 }

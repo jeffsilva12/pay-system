@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Layout from "@/app/components/Layout";
+import toast, { Toaster } from "react-hot-toast";
+
 // Importando componentes de gráfico
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
@@ -25,6 +27,15 @@ export default function Dashboard() {
         if (res.ok) {
           const json = await res.json();
           setData(json);
+
+        if (json.hasRejectedPayment) {
+          const alreadyShown = localStorage.getItem("rejectedToastShown");
+
+          if (!alreadyShown) {
+            toast.error("Você possui pagamentos rejeitados!");
+            localStorage.setItem("rejectedToastShown", "true");
+          }
+        }
         }
       } finally {
         setLoading(false);
@@ -48,7 +59,9 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="page-header d-print-none">
+        <Toaster position="top-right" />
+
+        <div className="page-header d-print-none">
         <div className="container-xl">
           <h2 className="page-title">Visão Geral</h2>
         </div>
