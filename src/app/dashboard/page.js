@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Layout from "@/app/components/Layout";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -11,13 +10,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Ba
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
-  }, [status, router]);
 
   useEffect(() => {
     if (status !== "authenticated") return;
