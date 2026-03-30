@@ -2,6 +2,13 @@
 
 Uma aplicação full-stack moderna para gestão, aprovação e controle de pagamentos a fornecedores. Desenvolvida com foco em agilidade, segurança de dados e organização financeira.
 
+Link do sistema no ambiente remoto:
+https://pay-system-ochre.vercel.app/login
+
+Acesso:
+admin@admin.com
+admin123
+
 ![Next.js](https://img.shields.io/badge/Next.js-14+-black)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
